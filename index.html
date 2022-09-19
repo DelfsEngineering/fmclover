@@ -1,0 +1,162 @@
+<html lang="en">
+<head> 
+<link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <script  src="https://checkout.sandbox.dev.clover.com/sdk.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    <div id="alpine" x-data="dropdown" class="p-4 bg-white">
+        <h3 class="mb-2 font-bold">Clover demo in FM BetterEdit</h3>
+        <div class="mt-4">
+            <div class="form-row">
+                <div id="card-number" class="h-10 w-full"></div>
+                <div class="text-red-600 input-errors" id="card-number-errors" role="alert"></div>
+            </div>
+            
+            <div class="flex flex-row justify-between mt-2">
+                <div class="flex flex-col basis-2/6 form-row">
+                    <div id="card-date" class="h-10"></div>
+                    <div class="text-red-600 input-errors" id="card-date-errors" role="alert"></div>
+                </div>
+                <div class="flex flex-col basis-1/4 form-row">
+                    <div id="card-cvv" class="h-10"></div>
+                    <div class="text-red-600 input-errors" id="card-cvv-errors" role="alert"></div>
+                </div>
+                <div class="flex flex-col basis-2/6 form-row">
+                    <div id="card-postal-code" class="h-10"></div>
+                    <div class="text-red-600 input-errors" id="card-postal-code-errors" role="alert"></div>
+                </div>
+            </div>
+            <template x-if="!isProcessing"> 
+                <button x-on:click="submit()" class="bg-blue-800 w-full text-white p-4 rounded hover:bg-blue-900 transition-all mt-4">Make Payment</button> 
+            </template> 
+            <template x-if="isProcessing"> 
+                <button class="bg-gray-400 w-full text-white p-4 rounded mt-4">Processing...</button> 
+            </template>
+
+            <!-- Used to display form errors. -->
+            <div id="card-errors" role="alert"></div>
+            <div id="card-response" role="alert"></div>
+            <!--<span x-text="state"></span>-->
+        </div>
+    </div>
+    
+
+    <script>
+        
+        var fmpFileName = "myFileName.fmp12"
+        var fmpScriptName = "myScriptName"
+
+        //Add ?apikey=d8ab7a53-55be-2aab-9478-5231116bc43a to url
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        //var apiKey = urlParams.get('apikey')
+        var apiKey = "d8ab7a53-55be-2aab-9478-5231116bc43a"
+        console.log(apiKey)
+        const clover = new Clover(apiKey);
+        const elements = clover.elements();
+        
+        const styles = {
+            body: {
+                fontFamily: 'Roboto, Open Sans, sans-serif',
+                fontSize: '16px'
+            },
+
+            input: {
+                fontSize: '20px',
+                paddingLeft: '4px',
+                margin: '0px',
+                borderBottom: "1px solid gray",
+                height: "30px",
+                fontSize: "15px"
+            },
+
+            "input:focus": {
+                borderBottom: "1px solid blue"
+            }
+        };
+
+        const cardNumber = elements.create('CARD_NUMBER', styles);
+        const cardDate = elements.create('CARD_DATE', styles);
+        const cardCvv = elements.create('CARD_CVV', styles);
+        const cardPostalCode = elements.create('CARD_POSTAL_CODE', styles);
+    
+        cardNumber.mount('#card-number');
+        cardDate.mount('#card-date');
+        cardCvv.mount('#card-cvv');
+        cardPostalCode.mount('#card-postal-code');
+
+        const cardResponse = document.getElementById('card-response');
+        const displayCardNumberError = document.getElementById('card-number-errors');
+        const displayCardDateError = document.getElementById('card-date-errors');
+        const displayCardCvvError = document.getElementById('card-cvv-errors');
+        const displayCardPostalCodeError = document.getElementById('card-postal-code-errors');
+        // Handle real-time validation errors from the card Element.
+        cardNumber.addEventListener('change', function(event) {
+            console.log(`cardNumber changed ${JSON.stringify(event)}`);
+            displayCardNumberError.innerHTML = event.CARD_NUMBER.error || '';
+        });
+
+        cardNumber.addEventListener('blur', function(event) {
+            console.log(`cardNumber blur ${JSON.stringify(event)}`);
+            displayCardNumberError.innerHTML = event.CARD_NUMBER.error || '';
+        });
+
+        cardDate.addEventListener('change', function(event) {
+            console.log(`cardDate changed ${JSON.stringify(event)}`);
+            displayCardDateError.innerHTML = event.CARD_DATE.error || '';
+        });
+
+        cardDate.addEventListener('blur', function(event) {
+            console.log(`cardDate blur ${JSON.stringify(event)}`);
+            displayCardDateError.innerHTML = event.CARD_DATE.error || '';
+        });
+
+        cardCvv.addEventListener('change', function(event) {
+            console.log(`cardCvv changed ${JSON.stringify(event)}`);
+            displayCardCvvError.innerHTML = event.CARD_CVV.error || '';
+        });
+
+        cardCvv.addEventListener('blur', function(event) {
+            console.log(`cardCvv blur ${JSON.stringify(event)}`);
+            displayCardCvvError.innerHTML = event.CARD_CVV.error || '';
+        });
+
+        cardPostalCode.addEventListener('change', function(event) {
+            console.log(`cardPostalCode changed ${JSON.stringify(event)}`);
+            displayCardPostalCodeError.innerHTML = event.CARD_POSTAL_CODE.error || '';
+        });
+
+        cardPostalCode.addEventListener('blur', function(event) {
+            console.log(`cardPostalCode blur ${JSON.stringify(event)}`);
+            displayCardPostalCodeError.innerHTML = event.CARD_POSTAL_CODE.error || '';
+        });
+        
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('dropdown', () => ({
+                state: 'ready', 
+                isProcessing: false,
+                result: {},
+
+                submit() {
+                    this.isProcessing = true
+debugger;
+                    clover.createToken()
+                        .then(function(result) {
+                            FileMaker.PerformScript ( "Clover_Result", JSON.stringify(result) );
+                            console.log(result);
+                        })
+                        .catch(function(data) {
+                            console.log(data);   
+                        })
+                        .finally(function(date) {
+                            this.isProcessing = false
+                        })
+                }
+            }))
+        })
+    </script>
+
+</body>
+
+</html>
