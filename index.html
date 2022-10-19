@@ -49,8 +49,8 @@
         //Add ?apikey=d8ab7a53-55be-2aab-9478-5231116bc43a to url
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        //var apiKey = urlParams.get('apikey')
-        var apiKey = "d8ab7a53-55be-2aab-9478-5231116bc43a"
+        var apiKey = urlParams.get('apikey')
+        //var apiKey = "d8ab7a53-55be-2aab-9478-5231116bc43a"
         console.log(apiKey)
         const clover = new Clover(apiKey);
         const elements = clover.elements();
