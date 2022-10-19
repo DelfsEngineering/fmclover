@@ -146,6 +146,7 @@ debugger;
                             console.log(result);
                         })
                         .catch(function(data) {
+                            FileMaker.PerformScript ( "Clover_Result", JSON.stringify(result) );
                             console.log(data);   
                         })
                         .finally(function(date) {
@@ -154,6 +155,12 @@ debugger;
                 }
             }))
         })
+        
+        function finished (){
+            // called from FM when done
+            debugger
+            document.getElementById('alpine').__x.$data.isProcessing = false;
+        }
     </script>
 
 </body>
