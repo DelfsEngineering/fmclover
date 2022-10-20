@@ -142,14 +142,14 @@
 debugger;
                     clover.createToken()
                         .then(function(result) {
-                            FileMaker.PerformScript ( "Clover_Result", JSON.stringify(result) );
                             console.log(result);
+                            FileMaker.PerformScript ( "Clover_Result", JSON.stringify(result) );
                         })
                         .catch(function(data) {
-                            FileMaker.PerformScript ( "Clover_Result", JSON.stringify(result) );
-                            console.log(data);   
+                            console.log(data); 
+                            FileMaker.PerformScript ( "Clover_Result", JSON.stringify(data) );  
                         })
-                        .finally(function(date) {
+                        .finally(function(data) {
                             this.isProcessing = false
                         })
                 }
