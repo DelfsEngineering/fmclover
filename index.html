@@ -150,17 +150,11 @@ debugger;
                             FileMaker.PerformScript ( "Clover_Result", JSON.stringify(data) );  
                         })
                         .finally(function(data) {
-                            this.isProcessing = false
+                            document.getElementById('alpine').__x.$data.isProcessing = false;
                         })
                 }
             }))
         })
-        
-        function finished (){
-            // called from FM when done
-            debugger
-            document.getElementById('alpine').__x.$data.isProcessing = false;
-        }
     </script>
 
 </body>
