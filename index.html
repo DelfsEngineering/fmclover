@@ -26,10 +26,10 @@
                     <div class="text-red-600 input-errors" id="card-postal-code-errors" role="alert"></div>
                 </div>
             </div>
-            <template x-if="!isProcessing"> 
-                <button x-on:click="submit()" class="bg-blue-800 w-full text-white p-4 rounded hover:bg-blue-900 transition-all mt-4">Make Payment</button> 
+            <template x-if="!Alpine.store('dropdown').isProcessing"> 
+                <button x-on:click="Alpine.store('dropdown').submit()" class="bg-blue-800 w-full text-white p-4 rounded hover:bg-blue-900 transition-all mt-4">Make Payment</button> 
             </template> 
-            <template x-if="isProcessing"> 
+            <template x-if="Alpine.store('dropdown').isProcessing"> 
                 <button class="bg-gray-400 w-full text-white p-4 rounded mt-4">Processing...</button> 
             </template>
 
@@ -132,14 +132,13 @@
         });
         
         document.addEventListener('alpine:init', () => {
-            Alpine.data('dropdown', () => ({
+            Alpine.store('dropdown', {
                 state: 'ready', 
                 isProcessing: false,
                 result: {},
 
                 submit() {
-                    this.isProcessing = true
-debugger;
+                    Alpine.store('dropdown').isProcessing = true
                     clover.createToken()
                         .then(function(result) {
                             console.log(result);
@@ -150,10 +149,10 @@ debugger;
                             FileMaker.PerformScript ( "Clover_Result", JSON.stringify(data) );  
                         })
                         .finally(function(data) {
-                            document.getElementById('alpine').__x.$data.isProcessing = false;
+                            Alpine.store('dropdown').isProcessing = false
                         })
                 }
-            }))
+            })
         })
     </script>
 
