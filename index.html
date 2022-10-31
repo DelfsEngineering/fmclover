@@ -46,90 +46,105 @@
         var fmpFileName = "myFileName.fmp12"
         var fmpScriptName = "myScriptName"
 
-        //Add ?apikey=d8ab7a53-55be-2aab-9478-5231116bc43a to url
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         var apiKey = urlParams.get('apikey')
-        //var apiKey = "d8ab7a53-55be-2aab-9478-5231116bc43a"
-        console.log(apiKey)
-        const clover = new Clover(apiKey);
-        const elements = clover.elements();
+
+        let isDev = parseInt(urlParams.get('isDev')) == 0 ? false : true
+
+        const script = document.createElement('script');
+        script.src = isDev ? "https://checkout.sandbox.dev.clover.com/sdk.js" : 'https://checkout.clover.com/sdk.js' 
+        document.head.appendChild(script);
         
-        const styles = {
-            body: {
-                fontFamily: 'Roboto, Open Sans, sans-serif',
-                fontSize: '16px'
-            },
-
-            input: {
-                fontSize: '20px',
-                paddingLeft: '4px',
-                margin: '0px',
-                borderBottom: "1px solid gray",
-                height: "30px",
-                fontSize: "15px"
-            },
-
-            "input:focus": {
-                borderBottom: "1px solid blue"
+        let clover;
+        let cloverInterval = setInterval(function(){
+            try{
+                clover = new Clover(apiKey)
+                startClover()
+                clearInterval(cloverInterval) 
             }
-        };
+            catch(err){}
+        }, 1000)
+        
+        function startClover(){
+            const elements = clover.elements();
+        
+            const styles = {
+                body: {
+                    fontFamily: 'Roboto, Open Sans, sans-serif',
+                    fontSize: '16px'
+                },
 
-        const cardNumber = elements.create('CARD_NUMBER', styles);
-        const cardDate = elements.create('CARD_DATE', styles);
-        const cardCvv = elements.create('CARD_CVV', styles);
-        const cardPostalCode = elements.create('CARD_POSTAL_CODE', styles);
-    
-        cardNumber.mount('#card-number');
-        cardDate.mount('#card-date');
-        cardCvv.mount('#card-cvv');
-        cardPostalCode.mount('#card-postal-code');
+                input: {
+                    fontSize: '20px',
+                    paddingLeft: '4px',
+                    margin: '0px',
+                    borderBottom: "1px solid gray",
+                    height: "30px",
+                    fontSize: "15px"
+                },
 
-        const cardResponse = document.getElementById('card-response');
-        const displayCardNumberError = document.getElementById('card-number-errors');
-        const displayCardDateError = document.getElementById('card-date-errors');
-        const displayCardCvvError = document.getElementById('card-cvv-errors');
-        const displayCardPostalCodeError = document.getElementById('card-postal-code-errors');
-        // Handle real-time validation errors from the card Element.
-        cardNumber.addEventListener('change', function(event) {
-            console.log(`cardNumber changed ${JSON.stringify(event)}`);
-            displayCardNumberError.innerHTML = event.CARD_NUMBER.error || '';
-        });
+                "input:focus": {
+                    borderBottom: "1px solid blue"
+                }
+            };
 
-        cardNumber.addEventListener('blur', function(event) {
-            console.log(`cardNumber blur ${JSON.stringify(event)}`);
-            displayCardNumberError.innerHTML = event.CARD_NUMBER.error || '';
-        });
+            const cardNumber = elements.create('CARD_NUMBER', styles);
+            const cardDate = elements.create('CARD_DATE', styles);
+            const cardCvv = elements.create('CARD_CVV', styles);
+            const cardPostalCode = elements.create('CARD_POSTAL_CODE', styles);
 
-        cardDate.addEventListener('change', function(event) {
-            console.log(`cardDate changed ${JSON.stringify(event)}`);
-            displayCardDateError.innerHTML = event.CARD_DATE.error || '';
-        });
+            cardNumber.mount('#card-number');
+            cardDate.mount('#card-date');
+            cardCvv.mount('#card-cvv');
+            cardPostalCode.mount('#card-postal-code');
 
-        cardDate.addEventListener('blur', function(event) {
-            console.log(`cardDate blur ${JSON.stringify(event)}`);
-            displayCardDateError.innerHTML = event.CARD_DATE.error || '';
-        });
+            const cardResponse = document.getElementById('card-response');
+            const displayCardNumberError = document.getElementById('card-number-errors');
+            const displayCardDateError = document.getElementById('card-date-errors');
+            const displayCardCvvError = document.getElementById('card-cvv-errors');
+            const displayCardPostalCodeError = document.getElementById('card-postal-code-errors');
+            // Handle real-time validation errors from the card Element.
+            cardNumber.addEventListener('change', function(event) {
+                console.log(`cardNumber changed ${JSON.stringify(event)}`);
+                displayCardNumberError.innerHTML = event.CARD_NUMBER.error || '';
+            });
 
-        cardCvv.addEventListener('change', function(event) {
-            console.log(`cardCvv changed ${JSON.stringify(event)}`);
-            displayCardCvvError.innerHTML = event.CARD_CVV.error || '';
-        });
+            cardNumber.addEventListener('blur', function(event) {
+                console.log(`cardNumber blur ${JSON.stringify(event)}`);
+                displayCardNumberError.innerHTML = event.CARD_NUMBER.error || '';
+            });
 
-        cardCvv.addEventListener('blur', function(event) {
-            console.log(`cardCvv blur ${JSON.stringify(event)}`);
-            displayCardCvvError.innerHTML = event.CARD_CVV.error || '';
-        });
+            cardDate.addEventListener('change', function(event) {
+                console.log(`cardDate changed ${JSON.stringify(event)}`);
+                displayCardDateError.innerHTML = event.CARD_DATE.error || '';
+            });
 
-        cardPostalCode.addEventListener('change', function(event) {
-            console.log(`cardPostalCode changed ${JSON.stringify(event)}`);
-            displayCardPostalCodeError.innerHTML = event.CARD_POSTAL_CODE.error || '';
-        });
+            cardDate.addEventListener('blur', function(event) {
+                console.log(`cardDate blur ${JSON.stringify(event)}`);
+                displayCardDateError.innerHTML = event.CARD_DATE.error || '';
+            });
 
-        cardPostalCode.addEventListener('blur', function(event) {
-            console.log(`cardPostalCode blur ${JSON.stringify(event)}`);
-            displayCardPostalCodeError.innerHTML = event.CARD_POSTAL_CODE.error || '';
-        });
+            cardCvv.addEventListener('change', function(event) {
+                console.log(`cardCvv changed ${JSON.stringify(event)}`);
+                displayCardCvvError.innerHTML = event.CARD_CVV.error || '';
+            });
+
+            cardCvv.addEventListener('blur', function(event) {
+                console.log(`cardCvv blur ${JSON.stringify(event)}`);
+                displayCardCvvError.innerHTML = event.CARD_CVV.error || '';
+            });
+
+            cardPostalCode.addEventListener('change', function(event) {
+                console.log(`cardPostalCode changed ${JSON.stringify(event)}`);
+                displayCardPostalCodeError.innerHTML = event.CARD_POSTAL_CODE.error || '';
+            });
+
+            cardPostalCode.addEventListener('blur', function(event) {
+                console.log(`cardPostalCode blur ${JSON.stringify(event)}`);
+                displayCardPostalCodeError.innerHTML = event.CARD_POSTAL_CODE.error || '';
+            });
+        }
         
         document.addEventListener('alpine:init', () => {
             Alpine.store('dropdown', {
